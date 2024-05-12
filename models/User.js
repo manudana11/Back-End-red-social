@@ -9,7 +9,8 @@ const UserSchema = new mongoose.Schema({
     followers: Array,
     profilePic: String,
     posts: Array,
-    comments: Array
+    comments: Array,
+    tokens: [],
 }, { timestamps: true });
 
 const User = mongoose.model('User', UserSchema);
