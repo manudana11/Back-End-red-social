@@ -7,16 +7,7 @@ const PostSchema = new mongoose.Schema({
     userId: [{type:ObjectId, ref:'User'}],
     taggedpeople: [{type:ObjectId, ref:'Tagged'}],
     likes: [{type:ObjectId, ref:'Likes'}],
-    comments: [{
-        userId: {type:ObjectId, ref:'User'},
-        bodyText: String,
-        likes: [{type:ObjectId, ref:'User'}],
-        responses: [{
-            userId: {type:ObjectId, ref:'User'},
-            bodyText: String,
-            likes: [{type:ObjectId, ref:'User'}],
-        }],
-    }],
+    comments: [{type:ObjectId, ref:'User'}],
     location: String,
 }, { timestamps: true });
 
