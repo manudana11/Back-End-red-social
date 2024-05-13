@@ -7,17 +7,18 @@ const UserController = {
     async create(req, res) {
         try {
             const password = bcrypt.hashSync(req.body.password, 10)
-            const user = await User.create({ ...req.body, password, role:"user"})
+            const profilePic = req.file.path;
+            const user = await User.create({ ...req.body, password, role: "user", profilePic })
             res.status(201).send(user)
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: 'There´s been a problem creating the user' })
         }
     },
-    async userData (req,res){
+    async userData(req, res) {
         try {
             const userData = await User.findById(req.user._id)
-            res.send ({ message: 'Your information:', userData})
+            res.send({ message: 'Your information:', userData })
         } catch (error) {
             console.error(error)
             res.status(400).send({ message: 'You must be logged to see your information' })
