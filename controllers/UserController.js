@@ -31,6 +31,7 @@ const UserController = {
             if (!user) {
                 return res.status(400).send({ message: "User or Password incorrect" })
             }
+            console.log(req.body.password);
             const isMatch = bcrypt.compareSync(req.body.password, user.password);
             if (!isMatch) {
                 return res.status(400).send({ message: "User or Password incorrect" })
