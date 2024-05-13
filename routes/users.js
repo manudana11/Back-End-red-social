@@ -12,4 +12,3 @@ router.delete('/logout',authentication, UserController.logout)
 
 module.exports = router;
 
-//HOLA ACA TOY

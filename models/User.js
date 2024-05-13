@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
     posts: Array,
     comments: Array,
     tokens: [],
+    role:String,
 }, { timestamps: true });
 
 const User = mongoose.model('User', UserSchema);

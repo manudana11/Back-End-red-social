@@ -1,13 +1,13 @@
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { jwt_secret } = require('../config/keys.js')
+const { JWT_SECRET } = require('../config/keys.js')
 
 const UserController = {
     async create(req, res) {
         try {
             const password = bcrypt.hashSync(req.body.password, 10)
-            const user = await User.create({ ...req.body, password: password })
+            const user = await User.create({ ...req.body, password, role:"user"})
             res.status(201).send(user)
         } catch (error) {
             console.error(error)
@@ -16,14 +16,11 @@ const UserController = {
     },
     async userData (req,res){
         try {
-            console.log("ACA ESTAS");
-            console.log(req.user._id);
             const userData = await User.findById(req.user._id)
-            console.log(userData);
             res.send ({ message: 'Your information:', userData})
         } catch (error) {
             console.error(error)
-            res.status(404).send({ message: 'You must be logged to see your information' })
+            res.status(400).send({ message: 'You must be logged to see your information' })
         }
     },
     async login(req, res) {
@@ -38,13 +35,14 @@ const UserController = {
             if (!isMatch) {
                 return res.status(400).send({ message: "User or Password incorrect" })
             }
-            const token = jwt.sign({ _id: user._id }, jwt_secret);
+            const token = jwt.sign({ _id: user._id }, JWT_SECRET);
             if (user.tokens.length > 4) user.tokens.shift();
             user.tokens.push(token);
             await user.save();
             res.send({ message: 'Welcome ' + user.name, token });
         } catch (error) {
             console.error(error);
+            res.status(500).send(error)
         }
     },
     async logout(req, res) {
