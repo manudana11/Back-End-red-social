@@ -4,10 +4,10 @@ const ObjectId = mongoose.SchemaType.ObjectId;
 const PostSchema = new mongoose.Schema({
     imgpost: String,
     caption: String,
-    userId: [{type:ObjectId, ref:'User'}],
-    taggedpeople: [{type:ObjectId, ref:'Tagged'}],
-    likes: [{type:ObjectId, ref:'Likes'}],
-    comments: [{type:ObjectId, ref:'User'}],
+    userId: {type:ObjectId, ref:'User'},
+    taggedpeople: [{type:ObjectId, ref:'User'}],
+    likes: [{type:ObjectId, ref:'User'}],
+    commentsIds: [{type:ObjectId, ref:'Comment'}],
     location: String,
 }, { timestamps: true });
 
