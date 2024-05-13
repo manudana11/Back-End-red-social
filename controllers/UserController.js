@@ -28,10 +28,10 @@ const UserController = {
             res.status(500).send({ message: 'There´s been a problem creating the user' })
         }
     },
-    async userData (req,res){
+    async userData(req, res) {
         try {
             const userData = await User.findById(req.user._id)
-            res.send ({ message: 'Your information:', userData})
+            res.send({ message: 'Your information:', userData })
         } catch (error) {
             console.error(error)
             res.status(400).send({ message: 'You must be logged to see your information' })
