@@ -5,7 +5,7 @@ const PostSchema = new mongoose.Schema({
     imgpost: String,
     caption: String,
     userId: {type:ObjectId, ref:'User'},
-    taggedpeople: [{type:ObjectId, ref:'User'}],
+    taggedpeople: [],
     likes: [{type:ObjectId, ref:'User'}],
     commentsIds: [{type:ObjectId, ref:'Comment'}],
     location: String,

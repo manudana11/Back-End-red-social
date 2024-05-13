@@ -3,7 +3,11 @@ const Post = require("../models/Post");
 const PostController = {
     async create(req, res) {
         try {
-            const post = await Post.create(req.body)
+            console.log(
+                req.user._id
+            );
+            const user = ({...req.body, userId: req.user._id})
+            const post = await Post.create(user)
             res.status(201).send({ msg: `${req.user.name} created post successfully.`, post })
         } catch (error) {
             console.error(error);
