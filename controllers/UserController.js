@@ -30,6 +30,19 @@ const UserController = {
             res.status(500).send({ message: 'There´s been a problem creating the user', error })
         }
     },
+    async getAll(req, res) {
+        try {
+            const { page = 1, limit = 10 } = req.query
+            const users = await User.find()
+            .populate("posts.userId")
+            .limit(limit)
+            .skip((page - 1) * limit);
+            res.send({ message: 'Users', users })
+        } catch (error) {
+            console.error(error)
+            res.status(500).send({ message: 'There´s been a problem searching all the users' })
+        }
+    },
     async userData(req, res) {
         try {
             const userData = await User.findById(req.user._id)
