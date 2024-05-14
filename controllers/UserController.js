@@ -10,7 +10,9 @@ const UserController = {
             const email = req.body.email;
             const userExists = await User.findOne({ userName });
             const emailExists = await User.findOne({ email });
-            console.log(emailExists);
+            if (!req.body.password) {
+                return res.status(400).send({ message: "Please, complete the password field" })
+            }
             if (userExists || emailExists) {
                 return res.status(400).send({ message: "The email or username is already taken" })
             } else if (!req.file) {
@@ -25,7 +27,20 @@ const UserController = {
             }
         } catch (error) {
             console.error(error)
-            res.status(500).send({ message: 'There´s been a problem creating the user' })
+            res.status(500).send({ message: 'There´s been a problem creating the user', error })
+        }
+    },
+    async getAll(req, res) {
+        try {
+            const { page = 1, limit = 10 } = req.query
+            const users = await User.find()
+            .populate("posts.postId")
+            .limit(limit)
+            .skip((page - 1) * limit);
+            res.send({ message: 'Users', users })
+        } catch (error) {
+            console.error(error)
+            res.status(500).send({ message: 'There´s been a problem searching all the users' })
         }
     },
     async userData(req, res) {
@@ -70,6 +85,30 @@ const UserController = {
             res.status(500).send({
                 message: "There has been a problem during the disconnection, please try again!",
             });
+        }
+    },
+    async update(req, res) {
+        try {
+            if (!req.file) {
+                const update = { ...req.body, password: req.user.password, role: req.user.role}
+                const user = await User.findByIdAndUpdate(
+                    req.user._id,
+                    update,
+                    { new: true }
+                )
+                res.send({ message: "user successfully updated", user });;
+            } else {
+                const profilePic = req.file.path;
+                const update = { ...req.body, password: req.user.password, role: req.user.role, profilePic}
+                const user = await User.findByIdAndUpdate(
+                    req.user._id,
+                    update,
+                    { new: true }
+                );
+                res.send({ message: "user successfully updated", user });
+            }
+        } catch (error) {
+            console.error(error);
         }
     },
 }
