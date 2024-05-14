@@ -74,6 +74,30 @@ const UserController = {
             });
         }
     },
+    async update(req, res) {
+        try {
+            if (!req.file) {
+                const update = { ...req.body, password: req.user.password, role: req.user.role}
+                const user = await User.findByIdAndUpdate(
+                    req.user._id,
+                    update,
+                    { new: true }
+                )
+                res.send({ message: "user successfully updated", user });;
+            } else {
+                const profilePic = req.file.path;
+                const update = { ...req.body, password: req.user.password, role: req.user.role, profilePic}
+                const user = await User.findByIdAndUpdate(
+                    req.user._id,
+                    update,
+                    { new: true }
+                );
+                res.send({ message: "user successfully updated", user });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    },
 }
 
 module.exports = UserController;
