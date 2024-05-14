@@ -10,7 +10,9 @@ const UserController = {
             const email = req.body.email;
             const userExists = await User.findOne({ userName });
             const emailExists = await User.findOne({ email });
-            console.log(emailExists);
+            if (!req.body.password) {
+                return res.status(400).send({ message: "Please, complete the password field" })
+            }
             if (userExists || emailExists) {
                 return res.status(400).send({ message: "The email or username is already taken" })
             } else if (!req.file) {
@@ -25,7 +27,7 @@ const UserController = {
             }
         } catch (error) {
             console.error(error)
-            res.status(500).send({ message: 'There´s been a problem creating the user' })
+            res.status(500).send({ message: 'There´s been a problem creating the user', error })
         }
     },
     async userData(req, res) {
