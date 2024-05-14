@@ -3,7 +3,6 @@ const Post = require("../models/Post");
 const PostController = {
     async create(req, res) {
         try {
-            console.log(req.user._id);
             const imgpost = req.file.path;
             const user = ({...req.body, imgpost, userId: req.user._id})
             const post = await Post.create(user)
@@ -15,7 +14,8 @@ const PostController = {
     },
     async getAll(req, res) {
         try {
-            const posts = await Post.find();
+            const { page = 1, limit = 10 } = req.query;
+            const posts = await Post.find().limit(limit).skip((page - 1) * limit);
             res.send(posts);
         } catch (error) {
             console.error(error);
@@ -51,6 +51,19 @@ const PostController = {
           console.error(error);
         }
       },
+      async getPostByName(req, res) {
+        try {
+          if (req.query.caption.length>20){
+            return res.status(400).send('Búsqueda demasiado larga')
+          }
+          const caption = new RegExp(req.query.caption, "i");
+          const post = await Post.find({caption});
+          res.send(post);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    
 };
 
 module.exports = PostController;

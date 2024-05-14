@@ -1,6 +1,6 @@
 const express = require('express');
 const PostController = require('../controllers/PostController');
-const router = express.Router()
+const router = express.Router();
 const { authentication, isAdmin } = require("../middlewares/authentication");
 const { imgLoad } = require('../middlewares/multer');
 
@@ -10,5 +10,6 @@ router.get("/", PostController.getAll);
 router.put("/id/:_id", authentication, PostController.update);
 router.delete("/id/:_id", authentication, PostController.delete);
 router.get("/id/:_id", authentication, PostController.getById);
+router.get("/caption", authentication, PostController.getPostByName);
 
 module.exports = router;
