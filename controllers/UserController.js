@@ -34,7 +34,7 @@ const UserController = {
         try {
             const { page = 1, limit = 10 } = req.query
             const users = await User.find()
-            .populate("posts.userId")
+            .populate("posts.postId")
             .limit(limit)
             .skip((page - 1) * limit);
             res.send({ message: 'Users', users })
