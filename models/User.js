@@ -29,6 +29,7 @@ const UserSchema = new mongoose.Schema({
       },
     profilePic: String,
     followers: [{type:ObjectId, ref:'User'}],
+    following: [{type:ObjectId, ref:'User'}],
     posts: [{type:ObjectId, ref:'Post'}],
     comments: [{type:ObjectId, ref:'comment'}],
     likes:[{type:ObjectId, ref:'Post'}],

@@ -90,7 +90,7 @@ const UserController = {
     async update(req, res) {
         try {
             if (!req.file) {
-                const update = { ...req.body, password: req.user.password, role: req.user.role}
+                const update = { ...req.body, password: req.user.password, role: req.user.role, profilePic: req.user.profilePic}
                 const user = await User.findByIdAndUpdate(
                     req.user._id,
                     update,
@@ -111,6 +111,24 @@ const UserController = {
             console.error(error);
         }
     },
+    async followers(req, res) {
+        try {
+          const follower = await User.findByIdAndUpdate(
+            req.params._id,
+            { $push: { followers: req.user._id } },
+            { new: true }
+          );
+          await User.findByIdAndUpdate(
+            req.user._id,
+            { $push: { following: req.params._id } },
+            { new: true }
+          );
+          res.send(follower);
+        } catch (error) {
+          console.error(error);
+          res.status(500).send({ message: "There was a problem when you followed the user" });
+        }
+      },
 }
 
 module.exports = UserController;
