@@ -6,10 +6,23 @@ const { JWT_SECRET } = require('../config/keys.js')
 const UserController = {
     async create(req, res) {
         try {
-            const password = bcrypt.hashSync(req.body.password, 10)
-            const profilePic = req.file.path;
-            const user = await User.create({ ...req.body, password, role: "user", profilePic })
-            res.status(201).send(user)
+            const userName = req.body.userName;
+            const email = req.body.email;
+            const userExists = await User.findOne({ userName });
+            const emailExists = await User.findOne({ email });
+            console.log(emailExists);
+            if (userExists || emailExists) {
+                return res.status(400).send({ message: "The email or username is already taken" })
+            } else if (!req.file) {
+                const password = bcrypt.hashSync(req.body.password, 10)
+                const user = await User.create({ ...req.body, password, role: "user" })
+                res.status(201).send(user)
+            } else {
+                const profilePic = req.file.path;
+                const password = bcrypt.hashSync(req.body.password, 10)
+                const user = await User.create({ ...req.body, password, role: "user", profilePic })
+                res.status(201).send(user)
+            }
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: 'There´s been a problem creating the user' })
@@ -32,7 +45,6 @@ const UserController = {
             if (!user) {
                 return res.status(400).send({ message: "User or Password incorrect" })
             }
-            console.log(req.body.password);
             const isMatch = bcrypt.compareSync(req.body.password, user.password);
             if (!isMatch) {
                 return res.status(400).send({ message: "User or Password incorrect" })
