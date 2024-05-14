@@ -43,6 +43,14 @@ const PostController = {
           res.status(500).send({ message: "There was a problem trying to remove the post" });
         }
       },
+      async getById(req, res) {
+        try {
+          const post = await Post.findById(req.params._id);
+          res.send(post);
+        } catch (error) {
+          console.error(error);
+        }
+      },
 };
 
 module.exports = PostController;

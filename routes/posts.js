@@ -9,5 +9,6 @@ router.post("/", authentication, imgLoad, PostController.create);
 router.get("/", PostController.getAll);
 router.put("/id/:_id", authentication, PostController.update);
 router.delete("/id/:_id", authentication, PostController.delete);
+router.get("/id/:_id", authentication, PostController.getById);
 
 module.exports = router;
