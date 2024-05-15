@@ -112,7 +112,7 @@ const UserController = {
         }
     },
     async followers(req, res) {
-        try {
+        try {//Agregar limitador de 1
           const follower = await User.findByIdAndUpdate(
             req.params._id,
             { $push: { followers: req.user._id } },
@@ -129,6 +129,7 @@ const UserController = {
           res.status(500).send({ message: "There was a problem when you followed the user" });
         }
       },
+      //Unfollow
 }
 
 module.exports = UserController;
