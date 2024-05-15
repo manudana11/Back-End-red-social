@@ -1,8 +1,13 @@
 const Post = require("../models/Post");
+const User = require("../models/User");
+const Comment = require("../models/Comment");
 
 const PostController = {
     async create(req, res) {
         try {
+            if (!req.file) {
+              return res.status(400).send({ message: 'No file uploaded'});
+            };
             const imgpost = req.file.path;
             const user = ({...req.body, imgpost, userId: req.user._id})
             const post = await Post.create(user)
@@ -26,7 +31,7 @@ const PostController = {
         try {
           const post = await Post.findByIdAndUpdate(
             req.params._id,
-            {...req.body, userId: req.user._id, },
+            {...req.body, userId: req.user._id, likes: req.user.likes},
             { new: true }
           );
           res.send({ message: "Post successfully updated", post });
@@ -63,7 +68,38 @@ const PostController = {
           console.log(error);
         }
       },
-    
+      async getInfo(req, res) {
+        try {
+          const post = await Post.find()
+          .populate({
+            path: "commentsIds",
+          })
+          .populate({
+            path: "userId",
+            });
+          res.send(post);
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      async like(req, res) {
+        try {
+          const post = await Post.findByIdAndUpdate(
+            req.params._id,
+            { $push: { likes: req.user._id } },
+            { new: true }
+          );
+          await User.findByIdAndUpdate(
+            req.user._id,
+            { $push: { likes: req.params._id } },
+            { new: true }
+          );
+          res.send(post);
+        } catch (error) {
+          console.error(error);
+          res.status(500).send({ message: "There was a problem with your like" });
+        }
+      },
 };
 
 module.exports = PostController;

@@ -1,5 +1,5 @@
 const User = require('../models/User');
-// const Post = require('../models/post'); ESPERAR QIE ESTEN LOS POST
+const Post = require('../models/Post');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/keys.js')
 
@@ -27,19 +27,21 @@ const isAdmin = async(req, res, next) => {
     }
     next();
 }
-// const isAuthor = async(req, res, next) => {
-//     try {
-//         const order = await Order.findById(req.params._id);
-//         if (order.userId.toString() !== req.user._id.toString()) {
-//             return res.status(403).send({ message: 'Este pedido no es tuyo' });
-//         }
-//         next();
-//     } catch (error) {
-//         console.error(error)
-//         return res.status(500).send({ error, message: 'Ha habido un problema al comprobar la autoría del pedido' })
-//     }
-// }
+const isAuthor = async(req, res, next) => {
+    try {
+        const post = await Post.findById(req.params._id);
+        if (!post) {
+            return res.status(404).send({ message: 'Post not found' });
+        };
+        if (post.userId.toString() !== req.user._id.toString()) {
+            return res.status(403).send({ message: 'This is not your post' });
+        }
+        next();
+    } catch (error) {
+        console.error(error)
+        return res.status(500).send({ error, message: 'Something went wrong checking the authority of the post.' })
+    }
+}
 
 
-module.exports = { authentication, isAdmin };
-// isAuthor AGREGAR AL EXPORT
+module.exports = { authentication, isAdmin, isAuthor };

@@ -17,8 +17,6 @@ const CommentController = {
                 postId: req.params._id
             };
             const createComment = await Comment.create(comment);
-            console.log(req.params._id);
-            console.log(comment)
             await Post.findByIdAndUpdate(req.params._id, { $push: { commentsIds: createComment._id } })
             res.status(201).send({ message: `${req.user.name} created a comment successfully.`, createComment })
         } catch (error) {
