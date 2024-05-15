@@ -1,7 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../config/keys.js')
+const { JWT_SECRET } = require('../config/keys.js');
+const { transporter } = require("../config/nodemailer.js");
 
 const UserController = {
     async create(req, res) {
@@ -130,6 +131,27 @@ const UserController = {
         }
       },
       //Unfollow
+      async recoverPassword(req, res) {
+        try {
+          const recoverToken = jwt.sign({ email: req.params.email }, JWT_SECRET, {
+            expiresIn: "48h",
+          });
+          const url = "http://localhost:3000/users/resetPassword/" + recoverToken;
+          await transporter.sendMail({
+            to: req.params.email,
+            subject: "Recuperar contraseña",
+            html: `<h3> Recuperar contraseña </h3>
+            <a href="${url}">Recuperar contraseña</a>
+            El enlace expirará en 48 horas
+            `,
+          });
+          res.send({
+            message: "Un correo de recuperación se envio a tu dirección de correo",
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      },
 }
 
 module.exports = UserController;
