@@ -24,6 +24,15 @@ const CommentController = {
 			res.status(500).send({ message: "Error during post creation.", error });
         }
     },
+    async update(req, res) {
+        try {
+          const comment = await Comment.findByIdAndUpdate(req.params._id, req.body, { new: true })
+          res.send({ message: "comment successfully updated", comment });
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    
 };
 
 module.exports = CommentController;

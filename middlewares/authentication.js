@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Post = require('../models/Post');
+const Comment = require("../models/Comment");
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/keys.js')
 
@@ -41,7 +42,22 @@ const isAuthor = async(req, res, next) => {
         console.error(error)
         return res.status(500).send({ error, message: 'Something went wrong checking the authority of the post.' })
     }
+};
+const isYourComment = async(req, res, next) => {
+    try {
+        const comment = await Comment.findById(req.params._id);
+        if (!comment) {
+            return res.status(404).send({ message: 'Comment not found' });
+        };
+        if (comment.userId.toString() !== req.user._id.toString()) {
+            return res.status(403).send({ message: 'This is not your comment mate' });
+        }
+        next();
+    } catch (error) {
+        console.error(error)
+        return res.status(500).send({ error, message: 'Something went wrong checking the authority of the post.' })
+    }
 }
 
 
-module.exports = { authentication, isAdmin, isAuthor };
+module.exports = { authentication, isAdmin, isAuthor, isYourComment };
