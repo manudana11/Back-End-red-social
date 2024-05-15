@@ -84,6 +84,10 @@ const PostController = {
       },
       async like(req, res) {
         try {
+          const likeExist = await Post.findOne({ _id:req.params._id, likes:req.user._id });
+          if (likeExist) {
+            return res.status(400).send({ message: "You alrready like this post"});
+          }
           const post = await Post.findByIdAndUpdate(
             req.params._id,
             { $push: { likes: req.user._id } },
@@ -98,6 +102,27 @@ const PostController = {
         } catch (error) {
           console.error(error);
           res.status(500).send({ message: "There was a problem with your like" });
+        }
+      },
+      async dislike(req, res) {
+        try {
+          const likeExist = await Post.findOne({ _id:req.params._id, likes:req.user._id });
+          if(!likeExist) {
+            return res.status(400).send({ message: "You have not like this post"});
+          };
+          const post = await Post.findByIdAndUpdate(
+            req.params._id,
+            { $pull: { likes: req.user._id } },
+            { new: true }
+        );
+        await User.findByIdAndUpdate(
+            req.user._id,
+            { $pull: { likes: req.params._id } },
+            { new: true }
+        );
+        res.send(post);
+        } catch (error) {
+          
         }
       },
 };
