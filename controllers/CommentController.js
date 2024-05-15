@@ -78,6 +78,25 @@ const CommentController = {
           res.status(500).send({ message: "There was a problem with your like" });
         }
       },
+      async addResponse(req, res) {
+        try {
+            const comment = await Comment.findById(req.params._id);
+            if (!comment) {
+                return res.status(404).send({ message: 'Comment not found' });
+            }
+            const response = {
+                userId: req.user._id,
+                bodyText: req.body.bodyText,
+                likes: [],
+            };
+            comment.responses.push(response);
+            const updatedComment = await comment.save();
+            res.send({ message: "Response added successfully", updatedComment });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ message: "Error adding response to comment" });
+        }
+    },
 };
 
 module.exports = CommentController;
