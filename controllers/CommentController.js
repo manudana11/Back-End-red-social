@@ -1,5 +1,6 @@
 const Comment = require("../models/Comment");
 const Post = require("../models/Post");
+const User = require("../models/User");
 
 const CommentController = {
     async create(req, res) {
@@ -30,9 +31,53 @@ const CommentController = {
           res.send({ message: "comment successfully updated", comment });
         } catch (error) {
           console.error(error);
+          res.status(500).send({ message: 'There was a problem trying to update the comment'})
         }
       },
-    
+      async delete(req, res) {
+        try {
+            const comment = await Comment.findByIdAndDelete(req.params._id)
+            res.send({ message: 'Comment deleted', comment })
+        } catch (error) {
+            console.error(error)
+            res.status(500).send({ message: 'There was a problem trying to remove the comment'})
+        }
+    },
+    async like(req, res) {
+        try {
+          const likeExist = await Comment.findOne({ _id:req.params._id, likes:req.user._id });
+          if (likeExist) {
+            return res.status(400).send({ message: "You alrready like this comment"});
+          }
+          const comment = await Comment.findByIdAndUpdate(
+            req.params._id,
+            { $push: { likes: req.user._id } },
+            { new: true }
+          );
+          console.log(comment);
+          res.send(comment);
+        } catch (error) {
+          console.error(error);
+          res.status(500).send({ message: "There was a problem with your like" });
+        }
+      },
+      async dislike(req, res) {
+        try {
+          const likeExist = await Comment.findOne({ _id:req.params._id, likes:req.user._id });
+          if(!likeExist) {
+            return res.status(400).send({ message: "You have not like this comment"});
+          };
+          const comment = await Comment.findByIdAndUpdate(
+            req.params._id,
+            { $pull: { likes: req.user._id } },
+            { new: true }
+        );
+        res.send(comment);
+        } catch (error) {
+          console.error(error);
+          res.status(500).send({ message: "There was a problem with your like" });
+        }
+      },
 };
 
 module.exports = CommentController;
