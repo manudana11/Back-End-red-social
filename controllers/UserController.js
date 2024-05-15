@@ -152,6 +152,20 @@ const UserController = {
           console.error(error);
         }
       },
+      async resetPassword(req, res) {
+        try {
+          const recoverToken = req.params.recoverToken;
+          const payload = jwt.verify(recoverToken, JWT_SECRET);
+          const password = bcrypt.hashSync(req.body.password,10)
+          await User.findOneAndUpdate(
+            { email: payload.email },
+            { password }
+          );
+          res.send({ message: "contraseña cambiada con éxito" });
+        } catch (error) {
+          console.error(error);
+        }
+      },
 }
 
 module.exports = UserController;
