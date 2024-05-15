@@ -9,8 +9,8 @@ const PostController = {
               return res.status(400).send({ message: 'No file uploaded'});
             };
             const imgpost = req.file.path;
-            const user = ({...req.body, imgpost, userId: req.user._id})
-            const post = await Post.create(user)
+            const userPost = ({...req.body, imgpost, userId: req.user._id})
+            const post = await Post.create(userPost)
             res.status(201).send({ message: `${req.user.name} created post successfully.`, post })
         } catch (error) {
             console.error(error);
@@ -31,9 +31,10 @@ const PostController = {
         try {
           const post = await Post.findByIdAndUpdate(
             req.params._id,
-            {...req.body, userId: req.user._id, likes: req.user.likes},
+            {...req.body, userId:req.user._id, likes:req.user.likes},
             { new: true }
           );
+          console.log(post);
           res.send({ message: "Post successfully updated", post });
         } catch (error) {
           console.error(error);
@@ -73,9 +74,11 @@ const PostController = {
           const post = await Post.find()
           .populate({
             path: "commentsIds",
+            select: "userId bodyText likes responses"
           })
           .populate({
             path: "userId",
+            select: "userName name"
             });
           res.send(post);
         } catch (error) {
@@ -122,7 +125,8 @@ const PostController = {
         );
         res.send(post);
         } catch (error) {
-          
+          console.error(error);
+          res.status(500).send({ message: "There was a problem with your like" });
         }
       },
 };
