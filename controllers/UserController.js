@@ -181,6 +181,18 @@ const UserController = {
           console.error(error);
         }
       },
+      async confirm(req,res){
+        try {
+          await User.findOneAndUpdate({confirmed:true},{
+            where:{
+              email: req.params.email
+            }
+          })
+          res.status(201).send({message: "User confirmed successfully"});
+        } catch (error) {
+          console.error(error)
+        }
+      }, 
 }
 
 module.exports = UserController;
