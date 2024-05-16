@@ -152,12 +152,8 @@ const UserController = {
             console.error(error);
             res.status(500).send({ message: "There was a problem when you followed the user" });
         }
-<<<<<<< HEAD
     },
     //Unfollow
-=======
-      },
-      //Unfollow
       async recoverPassword(req, res) {
         try {
           const recoverToken = jwt.sign({ email: req.params.email }, JWT_SECRET, {
@@ -205,7 +201,6 @@ const UserController = {
           console.error(error)
         }
       }, 
->>>>>>> 09b34e053387165a6300bc2994089da88a231677
 }
 
 module.exports = UserController;
