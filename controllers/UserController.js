@@ -183,11 +183,10 @@ const UserController = {
       },
       async confirm(req,res){
         try {
-          const user = await User.findOneAndUpdate({confirmed:true},{
-            where:{
-              email: req.params.email
-            }
-          })
+          const user = await User.findOneAndUpdate(
+            {email:req.params.email},
+            {confirmed:true},
+            {new:true});
           res.status(201).send({message: "User confirmed successfully", user});
         } catch (error) {
           console.error(error)
