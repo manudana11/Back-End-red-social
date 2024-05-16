@@ -35,6 +35,10 @@ const UserSchema = new mongoose.Schema({
     likes:[{type:ObjectId, ref:'Post'}],
     tokens: [],
     role:String,
+    confirmed: {
+      type: Boolean,
+      default: false
+  }
 }, { timestamps: true });
 
 UserSchema.methods.toJSON = function () {

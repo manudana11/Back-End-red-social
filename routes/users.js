@@ -11,6 +11,9 @@ router.get('/getAll', authentication, UserController.getAll)
 router.put('/follow/:_id', authentication, UserController.followers)
 router.post('/login',UserController.login)
 router.delete('/logout',authentication, UserController.logout)
+router.get("/recoverPassword/:email", UserController.recoverPassword)
+router.put("/resetPassword/:recoverToken", UserController.resetPassword)
+router.put("/confirm/:email", UserController.confirm);
 
 
 module.exports = router;
