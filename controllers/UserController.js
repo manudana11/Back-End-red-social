@@ -50,9 +50,9 @@ const UserController = {
         try {
             const { page = 1, limit = 10 } = req.query
             const users = await User.find()
-            .populate("posts.postId")
-            .limit(limit)
-            .skip((page - 1) * limit);
+                .populate("posts.postId")
+                .limit(limit)
+                .skip((page - 1) * limit);
             res.send({ message: 'Users', users })
         } catch (error) {
             console.error(error)
@@ -106,7 +106,7 @@ const UserController = {
     async update(req, res) {
         try {
             if (!req.file) {
-                const update = { ...req.body, password: req.user.password, role: req.user.role, profilePic: req.user.profilePic}
+                const update = { ...req.body, password: req.user.password, role: req.user.role }
                 const user = await User.findByIdAndUpdate(
                     req.user._id,
                     update,
@@ -115,7 +115,7 @@ const UserController = {
                 res.send({ message: "user successfully updated", user });;
             } else {
                 const profilePic = req.file.path;
-                const update = { ...req.body, password: req.user.password, role: req.user.role, profilePic}
+                const update = { ...req.body, password: req.user.password, role: req.user.role, profilePic }
                 const user = await User.findByIdAndUpdate(
                     req.user._id,
                     update,
@@ -128,24 +128,32 @@ const UserController = {
         }
     },
     async followers(req, res) {
-        try {//Agregar limitador de 1
-          const follower = await User.findByIdAndUpdate(
-            req.params._id,
-            { $push: { followers: req.user._id } },
-            { new: true }
-          );
-          await User.findByIdAndUpdate(
-            req.user._id,
-            { $push: { following: req.params._id } },
-            { new: true }
-          );
-          res.send(follower);
+        try {
+            // Lo ideal es un includes del objt id pero como lo hago???????
+            //Agregar limitador de 1
+            const userLogged =req.user
+            const userFollowed =req.params._id
+            // console.log(req.user.following[0]);
+            if (userLogged.following.includes(userFollowed)) {
+                return res.status(400).send({ message: "You are already following this user" })
+            }
+            const follow = await User.findByIdAndUpdate(
+                userFollowed,
+                { $push: { followers: userLogged } },
+                { new: true }
+            );
+            await User.findByIdAndUpdate(
+                userLogged,
+                { $push: { following: userFollowed } },
+                { new: true }
+            );
+            res.send(follow);
         } catch (error) {
-          console.error(error);
-          res.status(500).send({ message: "There was a problem when you followed the user" });
+            console.error(error);
+            res.status(500).send({ message: "There was a problem when you followed the user" });
         }
-      },
-      //Unfollow
+    },
+    //Unfollow
       async recoverPassword(req, res) {
         try {
           const recoverToken = jwt.sign({ email: req.params.email }, JWT_SECRET, {
