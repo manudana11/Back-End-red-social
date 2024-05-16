@@ -68,6 +68,26 @@ const UserController = {
             res.status(400).send({ message: 'You must be logged to see your information' })
         }
     },
+    async getById(req, res) {
+        try {
+            const user = await User.findById(req.params._id);
+            res.send(user);
+        } catch (error) {
+            console.error(error);
+        }
+    },
+    async getUserByUsername(req, res) {
+        try {
+            if (req.query.name.length > 20) {
+                return res.status(400).send('Búsqueda demasiado larga')
+            }
+            const name = new RegExp(req.query.name, "i");
+            const user = await User.find({ name });
+            res.send(user);
+        } catch (error) {
+            console.log(error);
+        }
+    },
     async login(req, res) {
         try {
             const user = await User.findOne({
@@ -81,7 +101,7 @@ const UserController = {
                 return res.status(400).send({ message: "User or Password incorrect" })
             }
             if (!user.confirmed) {
-                return res.status(400).send({ message: "Debes confirmar tu correo" }) 
+                return res.status(400).send({ message: "Debes confirmar tu correo" })
             }
             const token = jwt.sign({ _id: user._id }, JWT_SECRET);
             if (user.tokens.length > 4) user.tokens.shift();
@@ -130,13 +150,10 @@ const UserController = {
             console.error(error);
         }
     },
-    async followers(req, res) {
+    async follow(req, res) {
         try {
-            // Lo ideal es un includes del objt id pero como lo hago???????
-            //Agregar limitador de 1
-            const userLogged =req.user
-            const userFollowed =req.params._id
-            // console.log(req.user.following[0]);
+            const userLogged = req.user
+            const userFollowed = req.params._id
             if (userLogged.following.includes(userFollowed)) {
                 return res.status(400).send({ message: "You are already following this user" })
             }
@@ -156,53 +173,78 @@ const UserController = {
             res.status(500).send({ message: "There was a problem when you followed the user" });
         }
     },
-    //Unfollow
-      async recoverPassword(req, res) {
+    async unfollow(req, res) {
         try {
-          const recoverToken = jwt.sign({ email: req.params.email }, JWT_SECRET, {
-            expiresIn: "48h",
-          });
-          const url = "http://localhost:3000/users/resetPassword/" + recoverToken;
-          await transporter.sendMail({
-            to: req.params.email,
-            subject: "Recuperar contraseña",
-            html: `<h3> Recuperar contraseña </h3>
+            const userLogged = req.user
+            const userUnfollowed = req.params._id
+            const follows = userLogged.following.includes(userUnfollowed)
+            console.log(userLogged);
+            console.log(userUnfollowed);
+            if (!follows) {
+                return res.status(400).send({ message: "You are not following this user" })
+            }
+            const unfollow = await User.findByIdAndUpdate(
+                userUnfollowed,
+                { $pull: { followers: userLogged._id } },
+                { new: true }
+            );
+            await User.findByIdAndUpdate(
+                userLogged,
+                { $pull: { following: userUnfollowed } },
+                { new: true }
+            );
+            res.send(unfollow);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ message: "There was a problem when you unfollowed the user" });
+        }
+    },
+    async recoverPassword(req, res) {
+        try {
+            const recoverToken = jwt.sign({ email: req.params.email }, JWT_SECRET, {
+                expiresIn: "48h",
+            });
+            const url = "http://localhost:3000/users/resetPassword/" + recoverToken;
+            await transporter.sendMail({
+                to: req.params.email,
+                subject: "Recuperar contraseña",
+                html: `<h3> Recuperar contraseña </h3>
             <a href="${url}">Recuperar contraseña</a>
             El enlace expirará en 48 horas
             `,
-          });
-          res.send({
-            message: "Un correo de recuperación se envio a tu dirección de correo",
-          });
+            });
+            res.send({
+                message: "Un correo de recuperación se envio a tu dirección de correo",
+            });
         } catch (error) {
-          console.error(error);
+            console.error(error);
         }
-      },
-      async resetPassword(req, res) {
+    },
+    async resetPassword(req, res) {
         try {
-          const recoverToken = req.params.recoverToken;
-          const payload = jwt.verify(recoverToken, JWT_SECRET);
-          const password = bcrypt.hashSync(req.body.password,10)
-          await User.findOneAndUpdate(
-            { email: payload.email },
-            { password }
-          );
-          res.send({ message: "contraseña cambiada con éxito" });
+            const recoverToken = req.params.recoverToken;
+            const payload = jwt.verify(recoverToken, JWT_SECRET);
+            const password = bcrypt.hashSync(req.body.password, 10)
+            await User.findOneAndUpdate(
+                { email: payload.email },
+                { password }
+            );
+            res.send({ message: "contraseña cambiada con éxito" });
         } catch (error) {
-          console.error(error);
+            console.error(error);
         }
-      },
-      async confirm(req,res){
+    },
+    async confirm(req, res) {
         try {
-          const user = await User.findOneAndUpdate(
-            {email:req.params.email},
-            {confirmed:true},
-            {new:true});
-          res.status(201).send({message: "User confirmed successfully", user});
+            const user = await User.findOneAndUpdate(
+                { email: req.params.email },
+                { confirmed: true },
+                { new: true });
+            res.status(201).send({ message: "User confirmed successfully", user });
         } catch (error) {
-          console.error(error)
+            console.error(error)
         }
-      }, 
+    },
 }
 
 module.exports = UserController;
