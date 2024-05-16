@@ -97,6 +97,56 @@ const CommentController = {
             res.status(500).send({ message: "Error adding response to comment" });
         }
     },
+    async likeResponse(req, res) {
+      try {
+        const { responseId } = req.params;
+        const userId = req.user._id;
+        const comment = await Comment.findOne({
+        "responses._id": responseId,
+        "responses.likes": userId
+    });
+        if (comment) {
+          return res.status(400).send({ message: "You already like this response" });
+        }
+        const updatedComment = await Comment.findOneAndUpdate(
+          { "responses._id": responseId },
+          { $push: { "responses.$.likes": userId } },
+          { new: true }
+        );
+        if (!updatedComment) {
+          return res.status(404).send({ message: "Response not found" });
+        }
+        res.send(updatedComment);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "There was a problem with your like" });
+      }
+    },
+    async dislikeResponse(req, res) {
+      try {
+        const { responseId } = req.params;
+        const userId = req.user._id;
+        const comment = await Comment.findOne({
+        "responses._id": responseId,
+        "responses.likes": userId
+    });
+        if (!comment) {
+          return res.status(400).send({ message: "You haven not like this response" });
+        }
+        const updatedComment = await Comment.findOneAndUpdate(
+          { "responses._id": responseId },
+          { $pull: { "responses.$.likes": userId } },
+          { new: true }
+        );
+        if (!updatedComment) {
+          return res.status(404).send({ message: "Response not found" });
+        }
+        res.send(updatedComment);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "There was a problem with your like" });
+      }
+    },
 };
 
 module.exports = CommentController;

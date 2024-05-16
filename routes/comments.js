@@ -10,5 +10,7 @@ router.delete("/id/:_id", authentication, isYourComment, CommentController.delet
 router.put("/likes/:_id", authentication, CommentController.like);
 router.put("/dislikes/:_id", authentication, CommentController.dislike);
 router.put("/response/:_id", authentication, CommentController.addResponse);
+router.put("/likeresponse/:responseId", authentication, CommentController.likeResponse);
+router.put("/dislikeresponse/:responseId", authentication, CommentController.dislikeResponse);
 
 module.exports = router;
