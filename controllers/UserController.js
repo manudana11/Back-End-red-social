@@ -62,7 +62,7 @@ const UserController = {
     async userData(req, res) {
         try {
             const userData = await User.findById(req.user._id).populate({ path: "followers", select: "userName" })
-            .populate ("posts")
+            .populate ("posts").populate ({path: "following", select: "userName"})
             res.send({ message: 'Your information:', userData })
         } catch (error) {
             console.error(error)
@@ -246,6 +246,17 @@ const UserController = {
             console.error(error)
         }
     },
+    async delete(req, res) {
+        try {
+          const post = await User.findByIdAndDelete(req.user._id);
+          // Comments
+          // Posts
+          res.send({ message: "Deleted user with all his posts and comments", post });
+        } catch (error) {
+          console.error(error);
+          res.status(500).send({ message: "There was a problem trying to remove the post" });
+        }
+      },
 }
 
 module.exports = UserController;
