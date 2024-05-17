@@ -61,12 +61,18 @@ const PostController = {
   async delete(req, res) {
     try {
       const post = await Post.findByIdAndDelete(req.params._id);
-      const commentsIds = post.commentsIds.map(comment => comment._id);
-      await Comment.deleteMany({ _id: { $in: commentsIds } });
       await User.findByIdAndUpdate(
         req.user._id,
         { $pull: { posts: post._id } },
         { new: true }
+      );
+      const commentsIds = post.commentsIds.map(comment => comment._id);
+      await Comment.deleteMany({
+        postId:req.params._id
+      });
+      await User.updateMany(
+        { comments: { $in: commentsIds } },
+        { $pull: { comments: { $in: commentsIds } } }
       );
       res.send({ message: "Post deleted", post });
     } catch (error) {
