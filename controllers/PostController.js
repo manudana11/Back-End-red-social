@@ -11,6 +11,12 @@ const PostController = {
       const imgpost = req.file.path;
       const userPost = ({ ...req.body, imgpost, userId: req.user._id })
       const post = await Post.create(userPost)
+      console.log(res.post)
+      await User.findByIdAndUpdate(
+        req.user._id,
+        { $push: { posts: post._id } },
+        { new: true }
+      );
       res.status(201).send({ message: `${req.user.name} created post successfully.`, post })
     } catch (error) {
       console.error(error);
@@ -55,6 +61,19 @@ const PostController = {
   async delete(req, res) {
     try {
       const post = await Post.findByIdAndDelete(req.params._id);
+      await User.findByIdAndUpdate(
+        req.user._id,
+        { $pull: { posts: post._id } },
+        { new: true }
+      );
+      const commentsIds = post.commentsIds.map(comment => comment._id);
+      await Comment.deleteMany({
+        postId:req.params._id
+      });
+      await User.updateMany(
+        { comments: { $in: commentsIds } },
+        { $pull: { comments: { $in: commentsIds } } }
+      );
       res.send({ message: "Post deleted", post });
     } catch (error) {
       console.error(error);
@@ -86,7 +105,11 @@ const PostController = {
       const post = await Post.find()
         .populate({
           path: "commentsIds",
-          select: "userId bodyText likes responses"
+          populate: {
+            path: "userId",
+            select: "userName name"
+          },
+          select: "bodyText likes responses"
         })
         .populate({
           path: "userId",
