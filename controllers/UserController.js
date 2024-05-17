@@ -2,7 +2,7 @@ const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require("dotenv").config();
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET, API_URL} = process.env;
 const { transporter } = require("../config/nodemailer.js");
 
 const UserController = {
@@ -12,7 +12,7 @@ const UserController = {
             const email = req.body.email;
             const userExists = await User.findOne({ userName });
             const emailExists = await User.findOne({ email });
-            const url = `http://localhost:3000/users/confirm/${req.body.email}`;
+            const url = `${API_URL}/users/confirm/${req.body.email}`;
             if (!req.body.password) {
                 return res.status(400).send({ message: "Please, complete the password field" })
             }

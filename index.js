@@ -12,3 +12,5 @@ app.use("/posts", require("./routes/posts"));
 app.use("/comments", require("./routes/comments"));
 
 app.listen(PORT, ()=> console.log(`Servidor levantado en el puerto ${PORT}`))
+
+module.exports = app;
