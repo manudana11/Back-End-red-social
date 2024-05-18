@@ -2,7 +2,8 @@ const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require("dotenv").config();
-const { JWT_SECRET, API_URL} = process.env;
+const { JWT_SECRET} = process.env;
+const API_URL = process.env.API_URL || "http://localhost:3000"
 const { transporter } = require("../config/nodemailer.js");
 
 const UserController = {
@@ -73,21 +74,21 @@ const UserController = {
     async getById(req, res) {
         try {
             const user = await User.findById(req.params._id)
-            res.send(user);
+            res.send({ message: 'user:', user});
         } catch (error) {
             console.error(error);
         }
     },
-    async getUserByUsername(req, res) {
+    async getUserByname(req, res) {
         try {
             if (req.query.name.length > 20) {
                 return res.status(400).send('Búsqueda demasiado larga')
             }
             const name = new RegExp(req.query.name, "i");
             const user = await User.find({ name });
-            res.send(user);
+            res.send({ message: 'user:', user});
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     },
     async login(req, res) {
@@ -169,7 +170,7 @@ const UserController = {
                 { $push: { following: userFollowed } },
                 { new: true }
             );
-            res.send(follow);
+            res.send({ message: "You successfully followed ", follow});
         } catch (error) {
             console.error(error);
             res.status(500).send({ message: "There was a problem when you followed the user" });
@@ -180,8 +181,7 @@ const UserController = {
             const userLogged = req.user
             const userUnfollowed = req.params._id
             const follows = userLogged.following.includes(userUnfollowed)
-            console.log(userLogged);
-            console.log(userUnfollowed);
+
             if (!follows) {
                 return res.status(400).send({ message: "You are not following this user" })
             }
@@ -195,7 +195,7 @@ const UserController = {
                 { $pull: { following: userUnfollowed } },
                 { new: true }
             );
-            res.send(unfollow);
+            res.send({ message: "You successfully unfollowed ",unfollow});
         } catch (error) {
             console.error(error);
             res.status(500).send({ message: "There was a problem when you unfollowed the user" });
@@ -206,7 +206,7 @@ const UserController = {
             const recoverToken = jwt.sign({ email: req.params.email }, JWT_SECRET, {
                 expiresIn: "48h",
             });
-            const url = "http://localhost:3000/users/resetPassword/" + recoverToken;
+            const url = API_URL+"/users/resetPassword/" + recoverToken;
             await transporter.sendMail({
                 to: req.params.email,
                 subject: "Recuperar contraseña",
