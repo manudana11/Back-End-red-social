@@ -1,7 +1,6 @@
 # Proyecto de Backend: API Rest para una Red Social
 
-## Contribución
-Este proyecto fue diseñado en conjunto con https://github.com/SebasBarrientos y https://github.com/manudana11 
+
 
 ## Introducción
 En este proyecto de backend se combinaron lo conocimientos en las tecnologías Node + Express, además de MongoDB/Mongoose. El proyecto consiste en desarrollar una API REST para una red social.
@@ -205,7 +204,10 @@ Para usar la API, realiza solicitudes HTTP a los endpoints especificados en la s
 ## Extras
 Si configuras adecuadamente el archivo "env." podras desplegar la aplicación en un servidor web. A los fines de este proyecto se utilizo "render.com" y no hubo inconveniente alguno. 
 
-
+## Contribución
+Este proyecto fue diseñado por:
+https://github.com/SebasBarrientos y https://github.com/manudana11 
 ## Contacto
 https://www.linkedin.com/in/sebasbarrientos/
+
 https://www.linkedin.com/in/manuel-dana-pallard%C3%B3/
