@@ -55,6 +55,8 @@ Para usar la API, realiza solicitudes HTTP a los endpoints especificados en la s
 
 # Endpoints
 
+Documentación de los endpoints: https://documenter.getpostman.com/view/34523070/2sA3QmCuTn
+
 ### Usuarios
 - **Registrar un usuario**: `POST /users` 
   - RUTA: `/users`
