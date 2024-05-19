@@ -165,7 +165,7 @@ Documentación de los endpoints: https://documenter.getpostman.com/view/34523070
   - MIDDLEWARE: `authentication`
   - CONTROLADOR: `PostController.like`
  
-![App Screenshot](./images/like-posts.png)
+![App Screenshot](./images/like-post.png)
 
 - **Quitar like a un post**: `PUT /posts/dislikes/:_id`
   - RUTA: `/posts/dislikes/:_id`
