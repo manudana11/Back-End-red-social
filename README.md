@@ -63,6 +63,8 @@ Documentación de los endpoints: https://documenter.getpostman.com/view/34523070
   - MIDDLEWARE: `imgLoad`
   - CONTROLADOR: `UserController.create`
 
+    ![App Screenshot](./images/create-user.png)
+
 - **Actualizar un usuario**: `PUT /users`
   - RUTA: `/users`
   - MIDDLEWARE: `authentication, imgLoad`
@@ -101,6 +103,8 @@ Documentación de los endpoints: https://documenter.getpostman.com/view/34523070
 - **Iniciar sesión**: `POST /users/login`
   - RUTA: `/users/login`
   - CONTROLADOR: `UserController.login`
+ 
+  ![App Screenshot](./images/login-user.png)
 
 - **Cerrar sesión**: `DELETE /users/logout`
   - RUTA: `/users/logout`
@@ -128,6 +132,8 @@ Documentación de los endpoints: https://documenter.getpostman.com/view/34523070
 - **Obtener todos los posts**: `GET /posts`
   - RUTA: `/posts`
   - CONTROLADOR: `PostController.getAll`
+ 
+    ![App Screenshot](./images/get-posts.png)
 
 - **Actualizar un post**: `PUT /posts/id/:_id`
   - RUTA: `/posts/id/:_id`
@@ -158,6 +164,8 @@ Documentación de los endpoints: https://documenter.getpostman.com/view/34523070
   - RUTA: `/posts/likes/:_id`
   - MIDDLEWARE: `authentication`
   - CONTROLADOR: `PostController.like`
+ 
+    ![App Screenshot](./images/like-posts.png)
 
 - **Quitar like a un post**: `PUT /posts/dislikes/:_id`
   - RUTA: `/posts/dislikes/:_id`
@@ -179,6 +187,8 @@ Documentación de los endpoints: https://documenter.getpostman.com/view/34523070
   - RUTA: `/comments/id/:_id`
   - MIDDLEWARE: `authentication, isYourComment`
   - CONTROLADOR: `CommentController.delete`
+ 
+    ![App Screenshot](./images/delete-comment.png)
 
 - **Dar like a un comentario**: `PUT /comments/likes/:_id`
   - RUTA: `/comments/likes/:_id`
