@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const { MONGO_URI, MONGO_URI_TEST } = process.env;
+const { MONGO_URI, MONGO_URI_TEST, NODE_ENV} = process.env;
 
 const dbConnection = async () => {
 	try {
-		if (process.env.NODE_ENV === 'test') {
+		if (NODE_ENV === 'test') {
 			console.log('DATABASE for tests conected');
 			return await mongoose.connect(MONGO_URI_TEST);
 		} else {
